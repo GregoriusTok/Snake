@@ -2,7 +2,7 @@ import pygame
 from random import randrange
 pygame.init()
 
-width, height = 600, 400
+width, height = 400, 400
 window = pygame.display.set_mode((width, height))
 gridSize = 20
 
@@ -60,7 +60,7 @@ class Player():
 
 class Tail(Player):
     def __init__(self, x, y):
-        self.colour = (255, 255, 0)
+        self.colour = (100, 100, 100)
         self.rect = pygame.Rect(x, y, 20, 20)
     
     def follow(self, dir):
@@ -70,7 +70,7 @@ class Tail(Player):
 
 class Apple():
     def __init__(self):
-        self.x, self.y = randrange(1,20), randrange(1,20)
+        self.x, self.y = randrange(1,round(width/gridSize)), randrange(1,round(height/gridSize))
         self.rect = pygame.Rect(self.x * gridSize, self.y * gridSize, gridSize, gridSize)
 
         self.colour = (255, 0, 50)
@@ -80,7 +80,7 @@ class Apple():
 
     def eaten(self, player):
         while True:
-            self.rect.x, self.rect.y = randrange(1, 20) * gridSize, randrange(1, 20) * gridSize
+            self.rect.x, self.rect.y = randrange(1, round(width/gridSize)) * gridSize, randrange(1, round(height/gridSize)) * gridSize
             for i in player.tails:
                 if self.rect.x == i.rect.x and self.rect.y == i.rect.y:
                     continue
