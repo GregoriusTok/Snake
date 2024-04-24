@@ -100,7 +100,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
         elif event.type == pygame.KEYDOWN:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_RIGHT] and player.dir != (-1, 0):
@@ -117,7 +116,8 @@ while running:
         apple.eaten(player)
         player.eat()
     
-    running = player.checkCollison()
+    if running:
+        running = player.checkCollison()
 
     apple.draw()
     player.draw()
