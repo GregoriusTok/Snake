@@ -22,6 +22,8 @@ class Player():
         self.dirL = []
 
         self.tails = []
+
+        self.movable = True
     
     def draw(self):
         pygame.draw.rect(window, self.colour, self.rect)
@@ -33,6 +35,8 @@ class Player():
 
         self.rect.centerx += gridSize * self.dir[0]
         self.rect.centery += gridSize * self.dir[1]
+
+        self.movable = True
   
         prev_pos = (self.rect.x, self.rect.y)
         for i, tail in enumerate(self.tails):
@@ -54,7 +58,7 @@ class Player():
                 continue
             if i.rect.x == self.rect.x and i.rect.y == self.rect.y:
                 return False
-        if self.rect.x > width or self.rect.x < 0 or self.rect.y > height or self.rect.y < 0:
+        if self.rect.x >= width or self.rect.x < 0 or self.rect.y >= height or self.rect.y < 0:
             return False
         return True
 
@@ -80,11 +84,13 @@ class Apple():
 
     def eaten(self, player):
         while True:
+            collides = False
             self.rect.x, self.rect.y = randrange(1, round(width/gridSize)) * gridSize, randrange(1, round(height/gridSize)) * gridSize
             for i in player.tails:
                 if self.rect.x == i.rect.x and self.rect.y == i.rect.y:
-                    continue
-            return
+                    collides = True
+            if not collides:
+                return
 
 
 player = Player()
@@ -101,23 +107,33 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_RIGHT] and player.dir != (-1, 0):
-                player.dir = (1, 0)
-            elif keys[pygame.K_LEFT] and player.dir != (1, 0):
-                player.dir = (-1, 0)
-            elif keys[pygame.K_DOWN] and player.dir != (0, -1):
-                player.dir = (0, 1)
-            elif keys[pygame.K_UP] and player.dir != (0, 1):
-                player.dir = (0, -1)
+            if player.movable:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_RIGHT] and player.dir != (-1, 0) or keys[pygame.K_d] and player.dir != (-1, 0):
+                    player.dir = (1, 0)
+                elif keys[pygame.K_LEFT] and player.dir != (1, 0) or keys[pygame.K_a] and player.dir != (1, 0):
+                    player.dir = (-1, 0)
+                elif keys[pygame.K_DOWN] and player.dir != (0, -1) or keys[pygame.K_s] and player.dir != (0, -1):
+                    player.dir = (0, 1)
+                elif keys[pygame.K_UP] and player.dir != (0, 1) or keys[pygame.K_w] and player.dir != (0, 1):
+                    player.dir = (0, -1)
+                player.movable = False
     
     player.move()
     if player.rect.x == apple.rect.x and player.rect.y == apple.rect.y:
         apple.eaten(player)
         player.eat()
     
-    if running:
-        running = player.checkCollison()
+    # if running:
+    #     running = player.checkCollison()
+    if not player.checkCollison():
+        player.movable = False
+        for i in player.tails:      
+            player.tails.remove(i)
+        player.tails = []
+        player.rect.x, player.rect.y = 2 * gridSize, 2 * gridSize
+        player.dir = (0,0)
+        player.movable = True
 
     apple.draw()
     player.draw()
