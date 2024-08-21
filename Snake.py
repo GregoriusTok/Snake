@@ -1,8 +1,9 @@
 import pygame
 from random import randrange
+from math import gcd
 pygame.init()
 
-width, height = 400, 400
+width, height = 420, 420
 window = pygame.display.set_mode((width, height))
 gridSize = 20
 
