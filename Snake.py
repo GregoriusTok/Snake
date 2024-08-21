@@ -24,6 +24,8 @@ class Player():
 
         self.tails = []
 
+        self.speed = 1
+
         self.movable = True
     
     def draw(self):
@@ -34,16 +36,17 @@ class Player():
         if len(self.dirL) > len(self.tails) + 1:
             self.dirL.pop()
 
-        self.rect.centerx += gridSize * self.dir[0]
-        self.rect.centery += gridSize * self.dir[1]
+        self.rect.centerx += gridSize * self.dir[0] * self.speed
+        self.rect.centery += gridSize * self.dir[1] * self.speed
 
         self.movable = True
   
         prev_pos = (self.rect.x, self.rect.y)
         for i, tail in enumerate(self.tails):
-            tail_pos = (tail.rect.x, tail.rect.y)
-            tail.rect.x, tail.rect.y = prev_pos
-            prev_pos = tail_pos
+            if self.speed != 0:
+                tail_pos = (tail.rect.x, tail.rect.y)
+                tail.rect.x, tail.rect.y = prev_pos
+                prev_pos = tail_pos
             tail.draw()
 
     def eat(self):
@@ -67,11 +70,6 @@ class Tail(Player):
     def __init__(self, x, y):
         self.colour = (100, 100, 100)
         self.rect = pygame.Rect(x, y, 20, 20)
-    
-    def follow(self, dir):
-        self.rect.centerx += gridSize * dir[0]
-        self.rect.centery += gridSize * dir[1]
-        # print(dir)
 
 class Apple():
     def __init__(self):
@@ -119,6 +117,11 @@ while running:
                 elif keys[pygame.K_UP] and player.dir != (0, 1) or keys[pygame.K_w] and player.dir != (0, 1):
                     player.dir = (0, -1)
                 player.movable = False
+
+            player.speed = 1
+            if keys[pygame.K_SPACE]:
+                player.speed = 0
+            
     
     player.move()
     if player.rect.x == apple.rect.x and player.rect.y == apple.rect.y:
